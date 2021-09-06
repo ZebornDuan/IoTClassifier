@@ -32,13 +32,12 @@ def get_entropy_feature(pcap_file, output_file):
     output_file.close()
 
 
-def generate_feature(file, feature_list, selected_feature):
+def generate_feature(file, feature_list, selected_feature, alias):
     line = file.readline()
     while line:
         fields = line.split('$')
         feature_vector = tuple(
-            feature_value for feature_name, feature_value in zip(feature_list, fields) if
-            feature_name in selected_feature)
+            fields[feature_list.index(alias.get(feature_name, feature_name))] for feature_name in selected_feature)
         yield feature_vector
         line = file.readline()
     file.close()

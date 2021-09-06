@@ -58,13 +58,20 @@ class UNSWDataset(object):
         self.label_map = {mac: i for i, mac in enumerate(self.mac_device_map.keys())}
         self.month = [9] * 8 + [10] * 12
         self.date = list(range(23, 31)) + list(range(1, 13))
-        self.feature_list = ['index', 'timestamp', 'eth_type', 'ip_src', 'ip_dst', 'ip_proto', 'ip_opt_padding',
+        self.feature_list = ['index', 'timestamp', 'size', 'eth_src', 'eth_dst',
+                             'eth_type', 'ip_src', 'ip_dst', 'ip_proto', 'ip_opt_padding',
                              'ip_opt_ra', 'tcp_srcport', 'tcp_dstport', 'tcp_stream', 'tcp_window_size', 'tcp_len',
                              'ssl_ciphersuite', 'udp_srcport', 'udp_dstport', 'udp_stream', 'dns_query_name', 'http',
                              'ntp']
+        self._feature_map = {'address_src': 'eth_src', 'address_dst': 'eth_dst'}
+        self.default_training_range = {
+            'train': {'month': self.month[:10], 'date': self.date[:10]},
+            'test': {'month': self.month[10:], 'date': self.date[10:]}
+        }
 
     def run_tshark(self):
         command = 'tshark -r ./UNSWData/pcap-raw/{}.pcap -T fields -E separator=$ -e frame.number -e frame.time_epoch '\
+                  '-e frame.len -e eth.src -e eth.dst' \
                   '-e eth.type -e ip.src -e ip.dst -e ip.proto -e ip.opt.padding -e ip.opt.ra -e tcp.srcport -e ' \
                   'tcp.dstport -e tcp.stream -e tcp.window_size -e tcp.len -e ssl.handshake.ciphersuite -e ' \
                   'udp.srcport -e udp.dstport -e udp.stream -e dns.qry.name -e http -e ntp >./UNSWData/features/{}.csv'
@@ -85,7 +92,7 @@ class UNSWDataset(object):
         for m, d in zip(month, date):
             feature_path = './UNSWData/features/16-{:02d}-{:02d}.csv'.format(m, d)
             f = open(feature_path, 'r')
-            yield from generate_feature(f, self.feature_list, features)
+            yield from generate_feature(f, self.feature_list, features, self._feature_map)
             print('finish reading {}-{}'.format(m, d))
 
 
