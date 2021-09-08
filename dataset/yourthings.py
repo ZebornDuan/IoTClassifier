@@ -66,15 +66,16 @@ class YourthingsDataset(object):
         self._feature_map = {'address_src': 'ip_src', 'address_dst': 'ip_dst'}
 
     def run_tshark(self):
-        command = 'tshark -r ./Yourthings/pcap-raw/{}.pcap -T fields -E separator=$ -e frame.number -e ' \
+        base_dir = os.getcwd()
+        command = 'tshark -r {}/Yourthings/pcap-raw/{}.pcap -T fields -E separator=$ -e frame.number -e ' \
                   'frame.time_epoch -e frame.len ' \
                   '-e eth.type -e ip.src -e ip.dst -e ip.proto -e ip.opt.padding -e ip.opt.ra -e tcp.srcport -e ' \
                   'tcp.dstport -e tcp.stream -e tcp.window_size -e tcp.len -e ssl.handshake.ciphersuite -e ' \
                   'udp.srcport -e udp.dstport -e udp.stream -e dns.qry.name -e http -e ntp ' \
-                  '>./Yourthings/features/10-{}.csv '
+                  '>{}/Yourthings/features/10-{}.csv '
         for d in self.dates:
             file_name = '{:02}'.format(d)
-            os.system(command.format(file_name, file_name))
+            os.system(command.format(base_dir, file_name, base_dir, file_name))
 
     def data_generator(self, dates, features):
         file_path = './Yourthings/features/10-{}.csv'
@@ -83,9 +84,4 @@ class YourthingsDataset(object):
             csv_file = open(file_name, 'r')
             yield from generate_feature(csv_file, self.feature_list, features, self._feature_map)
             print('finish reading {}'.format(file_name))
-
-
-if __name__ == '__main__':
-    yourthings_dataset = YourthingsDataset()
-    yourthings_dataset.run_tshark()
 

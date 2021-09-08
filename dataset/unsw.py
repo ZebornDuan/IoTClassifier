@@ -1,7 +1,6 @@
-import math
-import os
-
 from dataset.utils import get_entropy_feature, generate_feature
+
+import os
 
 
 class UNSWDataset(object):
@@ -70,14 +69,15 @@ class UNSWDataset(object):
         }
 
     def run_tshark(self):
-        command = 'tshark -r ./UNSWData/pcap-raw/{}.pcap -T fields -E separator=$ -e frame.number -e frame.time_epoch '\
-                  '-e frame.len -e eth.src -e eth.dst' \
+        base_dir = os.getcwd()
+        command = 'tshark -r {}/UNSWData/pcap-raw/{}.pcap -T fields -E separator=$ -e frame.number '\
+                  '-e frame.time_epoch -e frame.len -e eth.src -e eth.dst ' \
                   '-e eth.type -e ip.src -e ip.dst -e ip.proto -e ip.opt.padding -e ip.opt.ra -e tcp.srcport -e ' \
                   'tcp.dstport -e tcp.stream -e tcp.window_size -e tcp.len -e ssl.handshake.ciphersuite -e ' \
-                  'udp.srcport -e udp.dstport -e udp.stream -e dns.qry.name -e http -e ntp >./UNSWData/features/{}.csv'
+                  'udp.srcport -e udp.dstport -e udp.stream -e dns.qry.name -e http -e ntp >{}/UNSWData/features/{}.csv'
         for m, d in zip(self.month, self.date):
             file_name = '16-{:02d}-{:02d}'.format(m, d)
-            os.system(command.format(file_name, file_name))
+            os.system(command.format(base_dir, file_name, base_dir, file_name))
 
     def get_entropy_feature(self):
         for m, d in zip(self.month, self.date):
@@ -95,8 +95,3 @@ class UNSWDataset(object):
             yield from generate_feature(f, self.feature_list, features, self._feature_map)
             print('finish reading {}-{}'.format(m, d))
 
-
-if __name__ == '__main__':
-    unsw_dataset = UNSWDataset()
-    unsw_dataset.run_tshark()
-    unsw_dataset.get_entropy_feature()
