@@ -36,7 +36,10 @@ class PrivateDataset(object):
         self.iot_list = {}
         for i in range(0, len(PrivateDataset.DEVICE_IOT_LIST), 2):
             self.iot_list[PrivateDataset.DEVICE_IOT_LIST[i]] = PrivateDataset.DEVICE_IOT_LIST[i + 1]
-        self.mac_device_map = {v: k for k, v in self.iot_list.items()}
+        self.non_iot_list = {}
+        self.device_list = self.iot_list
+        self.addr_device_map = {v: k for k, v in self.iot_list.items()}
+        self.label_map = {addr: i for i, addr in enumerate(self.addr_device_map.keys())}
         self._feature_map = {'address_src': 'eth_src', 'address_dst': 'eth_dst'}
         self.month = [11] * 13 + [12] * 31
         self.date = [17, 18] + list(range(20, 31)) + list(range(1, 32))
@@ -65,21 +68,17 @@ class PrivateDataset(object):
     def get_entropy_feature(self):
         for m, d in zip(self.month, self.date):
             file_name = '2020{:02d}{:02d}'.format(m, d)
-            pcap_file = './silent_test/pcap/{}.pcap'.format(file_name)
-            output_file = open('./silent_test/entropy/{}.csv'.format(file_name), 'w')
+            pcap_file = './silent-test/pcap/{}.pcap'.format(file_name)
+            output_file = open('./silent-test/entropy/{}.csv'.format(file_name), 'w')
             get_entropy_feature(pcap_file, output_file)
 
     def data_generator(self, month, date, features):
         if len(month) != len(date):
             raise ValueError("invalid parameter: len(month) != len(date)")
         for m, d in zip(month, date):
-            feature_path = './silent_test/csv/2020{:02d}{:02d}.csv'.format(m, d)
+            feature_path = './silent-test/csv/2020{:02d}{:02d}.csv'.format(m, d)
             f = open(feature_path, 'r')
             yield from generate_feature(f, self.feature_list, features, self._feature_map)
             print('finish reading {}-{}'.format(m, d))
 
 
-if __name__ == '__main__':
-    private_dataset = PrivateDataset()
-    private_dataset.run_tshark()
-    private_dataset.get_entropy_feature()

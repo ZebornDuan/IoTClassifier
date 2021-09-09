@@ -57,7 +57,10 @@ class YourthingsDataset(object):
         self.iot_list = {}
         for i in range(0, len(YourthingsDataset.DEVICE_IOT_LIST), 2):
             self.iot_list[YourthingsDataset.DEVICE_IOT_LIST[i]] = YourthingsDataset.DEVICE_IOT_LIST[i + 1]
-        self.ip_device_map = {v: k for k, v in self.iot_list.items()}
+        self.addr_device_map = {v: k for k, v in self.iot_list.items()}
+        self.non_iot_list = {}
+        self.device_list = self.iot_list
+        self.label_map = {addr: i for i, addr in enumerate(self.addr_device_map.keys())}
         self.dates = list(range(10, 20))
         self.feature_list = ['index', 'timestamp', 'size', 'eth_type', 'ip_src', 'ip_dst', 'ip_proto', 'ip_opt_padding',
                              'ip_opt_ra', 'tcp_srcport', 'tcp_dstport', 'tcp_stream', 'tcp_window_size', 'tcp_len',

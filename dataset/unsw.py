@@ -52,9 +52,9 @@ class UNSWDataset(object):
                 UNSWDataset.DEVICE_NONIOT_LIST[i + 1]
             self.device_list[UNSWDataset.DEVICE_NONIOT_LIST[i]] = \
                 UNSWDataset.DEVICE_NONIOT_LIST[i + 1]
-        self.mac_device_map = {v: k for k, v in self.iot_list.items()}
-        self.mac_device_map['non-iot'] = 'non-iot'
-        self.label_map = {mac: i for i, mac in enumerate(self.mac_device_map.keys())}
+        self.addr_device_map = {v: k for k, v in self.iot_list.items()}
+        self.addr_device_map['non-iot'] = 'non-iot'
+        self.label_map = {addr: i for i, addr in enumerate(self.addr_device_map.keys())}
         self.month = [9] * 8 + [10] * 12
         self.date = list(range(23, 31)) + list(range(1, 13))
         self.feature_list = ['index', 'timestamp', 'size', 'eth_src', 'eth_dst',
