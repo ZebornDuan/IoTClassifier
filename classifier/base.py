@@ -1,4 +1,4 @@
-from dataset import unsw, yourthings
+from dataset import unsw, yourthings, private
 
 import pickle
 
@@ -10,6 +10,7 @@ class Classifier(object):
         self._dataset = {
             'UNSW': unsw.UNSWDataset(),
             'Yourthings': yourthings.YourthingsDataset(),
+            'Private': private.PrivateDataset()
         }
         self.selected_features = []
         self.tag = 'base'
@@ -55,11 +56,15 @@ class Classifier(object):
 
     def train_on_unsw_dataset(self):
         training_set = self.tag + '-train.pkl'
-        return self.train_model(self._dataset['UNSW'], training_set)
+        self.train_model(self._dataset['UNSW'], training_set)
 
     def train_on_yourthings_dataset(self):
         training_set = self.tag + '-train.pkl'
-        return self.train_model(self._dataset['Yourthings'], training_set)
+        self.train_model(self._dataset['Yourthings'], training_set)
+
+    def train_on_private_dataset(self):
+        training_set = self.tag + '-train.pkl'
+        self.train_model(self._dataset['Private'], training_set)
 
     def test(self, dataset, test_set_archive=None):
         true_count, false_count = 0, 0

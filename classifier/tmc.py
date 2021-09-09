@@ -6,11 +6,11 @@ import numpy as np
 
 
 class TMCClassifier(Classifier):
-    def __init__(self, interval):
+    def __init__(self, interval=1800):
         super(TMCClassifier, self).__init__()
         self.interval = interval
         self.tag = 'TMC'
-        self.selected_features = ['timestamp', 'size', 'address_src', 'address_dst', 'tcp_dstport', 'ciphersuite',
+        self.selected_features = ['timestamp', 'size', 'address_src', 'address_dst', 'tcp_dstport', 'ssl_ciphersuite',
                                   'udp_dstport', 'dns_query_name', 'ntp']
         self._mnb1, self._mnb2, self._mnb3 = None, None, None
         self._reverse_c, self._reverse_r, self._reverse_d = None, None, None
@@ -151,7 +151,7 @@ class TMCClassifier(Classifier):
         self._mnb1, self._mnb2, self._mnb3 = mnb1, mnb2, mnb3
 
     def _get_final_dataset(self, original_dataset, raw_dataset):
-        final_features = {addr: [] for addr in raw_dataset.mac_device_map.keys()}
+        final_features = {addr: [] for addr in raw_dataset.addr_device_map.keys()}
         for addr, features in original_dataset.items():
             for feature in features:
                 feature_vector = [feature['flow_volume'], feature['flow_duration'], feature['flow_radio'],

@@ -14,6 +14,8 @@ class ByteIoTClassifier(Classifier):
             'hellinger': self.calculate_hellinger_distance,
             'total-variation': self.calculate_total_variation_distance
         }.get(metric)
+        self.selected_features = ['timestamp', 'size', 'address_src', 'address_dst', 'ip_src', 'ip_dst', 'ip_proto']
+        self.tag = 'byteiot'
         self._sample_set = None
 
     @staticmethod
@@ -32,11 +34,13 @@ class ByteIoTClassifier(Classifier):
                     half_dataset[addr].append(half_c)
 
     def get_dataset(self, raw_dataset, generator):
-        counter = {mac: {} for mac in raw_dataset.iot_list.values()}
-        dataset = {mac: [] for mac in raw_dataset.iot_list.values()}
-        half_dataset = {mac: [] for mac in raw_dataset.iot_list.values()}
+        counter = {addr: {} for addr in raw_dataset.iot_list.values()}
+        dataset = {addr: [] for addr in raw_dataset.iot_list.values()}
+        half_dataset = {addr: [] for addr in raw_dataset.iot_list.values()}
         instance_index = 0
         for t, size, addr_src, addr_dst, _ip_src, _ip_dst, _ip_proto in generator:
+            t = int(float(t))
+            size = int(size)
             if instance_index and t // self.interval != instance_index:
                 self._get_sample(counter, dataset, half_dataset)
                 instance_index = t // self.interval
@@ -54,7 +58,9 @@ class ByteIoTClassifier(Classifier):
             return half_dataset
 
     def train_model(self, dataset, training_set_archive):
-        self._sample_set = self.get_training_dataset(dataset, training_set_archive)
+        with open(training_set_archive, 'rb') as f:
+            train_set = pickle.load(f)
+            self._sample_set = train_set
 
     def test(self, dataset, test_set_archive=None):
         true_count, false_count = 0, 0
@@ -72,7 +78,7 @@ class ByteIoTClassifier(Classifier):
                             max_distance = max([nn[0] for nn in nearest_neighbors])
                             if distance < max_distance:
                                 nearest_neighbors = [nn for nn in nearest_neighbors if nn[0] < max_distance]
-                                nearest_neighbors.append(distance)
+                                nearest_neighbors.append((distance, train_addr))
                 counter, min_distance, max_count = {}, {}, 0
                 for nn in nearest_neighbors:
                     counter[nn[1]] = counter.get(nn[1], 0) + 1
@@ -85,7 +91,9 @@ class ByteIoTClassifier(Classifier):
                     true_count += 1
                 else:
                     false_count += 1
+            print(true_count, true_count + false_count, true_count / (true_count + false_count))
         accuracy = true_count / (true_count + false_count)
+        print(accuracy)
         return accuracy
 
     @staticmethod

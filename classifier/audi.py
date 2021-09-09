@@ -47,12 +47,12 @@ class AuDIClassifier(Classifier):
         super(AuDIClassifier, self).__init__()
         self.tag = 'audi'
         self.interval = interval
-        self.selected_features = ['timestamp', 'address_src', 'address_dst', 'ip_proto', 'tcp_srcport', 'tcp_dstport',
-                                  'udp_srcport', 'udp_dstport']
+        self.selected_features = ['timestamp', 'address_src', 'eth_type', 'address_dst', 'ip_proto', 'tcp_srcport',
+                                  'tcp_dstport', 'udp_srcport', 'udp_dstport']
 
     def get_dataset(self, raw_dataset, generator):
-        counter = {address: {} for address in raw_dataset.non_iot_list.values()}
-        dataset = {address: [] for address in raw_dataset.non_iot_list.values()}
+        counter = {address: {} for address in raw_dataset.iot_list.values()}
+        dataset = {address: [] for address in raw_dataset.iot_list.values()}
         instance_index = 0
         for t, addr_src, addr_dst, eth_type, ip_proto, tcp_srcport, tcp_dstport, udp_srcport, udp_dstport in generator:
             t = int(float(t))
@@ -62,7 +62,7 @@ class AuDIClassifier(Classifier):
                         feature = self.get_feature(c)
                         dataset[address].append(feature)
                 instance_index = t // self.interval
-                counter = {address: {} for address in raw_dataset.non_iot_list.values()}
+                counter = {address: {} for address in raw_dataset.iot_list.values()}
             if not instance_index:
                 instance_index = t // self.interval
             if addr_src in counter.keys():
@@ -117,15 +117,15 @@ class AuDIClassifier(Classifier):
                 dataset[address].append(feature)
         return dataset
 
-    def train_model(self, dataset, training_set_archive, sample_count=0xFFFFFFFF):
-        x_train, y_train = self.get_training_dataset(dataset, training_set_archive, sample_count)
+    def train_model(self, dataset, training_set_archive):
+        x_train, y_train = self.get_training_dataset(dataset, training_set_archive)
         scalar = MinMaxScaler()
         scalar.fit(x_train)
         x_train = scalar.transform(x_train)
         k_nn = KNeighborsClassifier()
         k_nn.fit(x_train, y_train)
         self.model = k_nn
-        self.preprocessor = scalar
+        self.preprocessor = scalar.transform
 
     @staticmethod
     def _f_period(x):
