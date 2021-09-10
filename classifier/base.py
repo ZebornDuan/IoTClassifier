@@ -30,10 +30,10 @@ class Classifier(object):
         x, y = [], []
         for address, features in train_set.items():
             for feature in features:
-                for F in feature:
-                    x.append(F)
-                    y.append(dataset.label_map[address])
+                x.append(feature)
+                y.append(dataset.label_map[address])
         x_train, y_train = np.array(x), np.array(y)
+        # print(x_train.shape, y_train.shape)
         return x_train, y_train
 
     def get_archived_dataset(self, dataset_tag, train_range=None, test_range=None):
@@ -80,7 +80,9 @@ class Classifier(object):
                     true_count += 1
                 else:
                     false_count += 1
+            print(true_count, true_count + false_count, true_count / (true_count + false_count))
         accuracy = true_count / (true_count + false_count)
+        print(accuracy)
         return accuracy
 
 

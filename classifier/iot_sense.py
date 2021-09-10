@@ -116,12 +116,11 @@ class IoTSenseClassifier(Classifier):
             x, y = [], []
             for sample_addr, features in train_set.items():
                 for feature in features:
-                    for F in feature:
-                        x.append(F)
-                        if sample_addr == addr:
-                            y.append(1)
-                        else:
-                            y.append(2)
+                    x.append(feature)
+                    if sample_addr == addr:
+                        y.append(1)
+                    else:
+                        y.append(2)
             x_train, y_train = np.array(x), np.array(y)
             gbdt = GradientBoostingClassifier(n_estimators=100, learning_rate=1.0, max_depth=1)
             gbdt.fit(x_train, y_train)
@@ -155,5 +154,7 @@ class IoTSenseClassifier(Classifier):
                     true_count += 1
                 else:
                     false_count += 1
-            accuracy = true_count / (true_count + false_count)
-            return accuracy
+            print(true_count, true_count + false_count, true_count / (true_count + false_count))
+        accuracy = true_count / (true_count + false_count)
+        print(accuracy)
+        return accuracy
