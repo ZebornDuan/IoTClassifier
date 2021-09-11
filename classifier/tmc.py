@@ -27,7 +27,10 @@ class TMCClassifier(Classifier):
                     'flow_duration': c['last-packet'] - c['first-packet'],
                     'sleep_time': c['t']
                 }
-                feature['flow_radio'] = feature['flow_volume'] / feature['flow_duration']
+                if feature['flow_duration']:
+                    feature['flow_radio'] = feature['flow_volume'] / feature['flow_duration']
+                else:
+                    feature['flow_radio'] = 0
                 if len(c['dt']) == 0:
                     feature['dns_interval'] = -1
                 elif len(c['dt']) == 1:
@@ -106,11 +109,14 @@ class TMCClassifier(Classifier):
     def _get_frequency_features(self, raw_feature):
         x_dns, x_rp, x_cs = [0] * len(self._reverse_d), [0] * len(self._reverse_r), [0] * len(self._reverse_c)
         for domain_name in raw_feature['dns']:
-            x_dns[self._reverse_d[domain_name]] += 1
+            if domain_name in self._reverse_d:
+                x_dns[self._reverse_d[domain_name]] += 1
         for port in raw_feature['rp']:
-            x_rp[self._reverse_r[port]] += 1
+            if port in self._reverse_r:
+                x_rp[self._reverse_r[port]] += 1
         for cipher_suite in raw_feature['cs']:
-            x_cs[self._reverse_c[cipher_suite]] += 1
+            if cipher_suite in self._reverse_c:
+                x_cs[self._reverse_c[cipher_suite]] += 1
         return x_dns, x_rp, x_cs
 
     def _train_preprocessor(self, train_set, dataset):
@@ -147,7 +153,10 @@ class TMCClassifier(Classifier):
         mnb1, mnb2, mnb3 = MultinomialNB(), MultinomialNB(), MultinomialNB()
         mnb1.fit(x_d, y_d)
         mnb2.fit(x_r, y_r)
-        mnb3.fit(x_c, y_c)
+        if x_c:
+            mnb3.fit(x_c, y_c)
+        else:
+            mnb3 = None
         self._mnb1, self._mnb2, self._mnb3 = mnb1, mnb2, mnb3
 
     def _get_final_dataset(self, original_dataset, raw_dataset):
@@ -161,14 +170,17 @@ class TMCClassifier(Classifier):
                 y_d_i_p = self._mnb1.predict_proba(np.array([x_d_i]))
                 y_r_i = self._mnb2.predict(np.array([x_r_i]))
                 y_r_i_p = self._mnb2.predict_proba(np.array([x_r_i]))
-                y_c_i = self._mnb3.predict(np.array([x_c_i]))
-                y_c_i_p = self._mnb3.predict_proba(np.array([x_c_i]))
+
                 feature_vector.append(y_d_i[0])
                 feature_vector.extend(list(y_d_i_p[0]))
                 feature_vector.append(y_r_i[0])
                 feature_vector.extend(list(y_r_i_p[0]))
-                feature_vector.append(y_c_i[0])
-                feature_vector.extend(list(y_c_i_p[0]))
+
+                if self._mnb3:
+                    y_c_i = self._mnb3.predict(np.array([x_c_i]))
+                    y_c_i_p = self._mnb3.predict_proba(np.array([x_c_i]))
+                    feature_vector.append(y_c_i[0])
+                    feature_vector.extend(list(y_c_i_p[0]))
                 final_features[addr].append(feature_vector)
         return final_features
 

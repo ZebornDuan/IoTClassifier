@@ -40,7 +40,7 @@ class BigDataClassifier(Classifier):
                 if feature:
                     features.append(feature)
             if features:
-                dataset[address].append(features)
+                dataset[address].extend(features)
 
     def get_dataset(self, raw_dataset, generator):
         instance_index = 0
