@@ -43,6 +43,12 @@ MEAN_RN_R_01 = 32  # f33
 
 
 class AuDIClassifier(Classifier):
+    '''
+    Marchal, Samuel, et al. "Audi: Toward autonomous iot device-type 
+    identification using periodic communication." IEEE Journal on Selected 
+    Areas in Communications 37.6 (2019): 1402-1412.
+    '''
+    
     def __init__(self, interval=1800):
         super(AuDIClassifier, self).__init__()
         self.tag = 'audi'

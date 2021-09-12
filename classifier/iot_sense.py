@@ -27,6 +27,12 @@ TCP_PAYLOAD_LENGTH = 18
 
 
 class IoTSenseClassifier(Classifier):
+    '''
+    Bezawada, B., Bachani, M., Peterson, J., Shirazi, H., Ray, I., & Ray, I. (2018). 
+    Iotsense: Behavioral fingerprinting of iot devices. 
+    arXiv preprint arXiv:1804.03852.
+    '''
+    
     def __init__(self, interval, entropy_feature_archive):
         super(IoTSenseClassifier, self).__init__()
         self.tag = 'iot-sense'

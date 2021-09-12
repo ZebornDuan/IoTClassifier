@@ -5,6 +5,10 @@ from sklearn.ensemble import RandomForestClassifier
 
 class BigDataClassifier(Classifier):
     def __init__(self, interval=1800, n=10):
+        '''
+        Shahid, Mustafizur R., et al. "IoT devices recognition through network traffic 
+        analysis." 2018 IEEE international conference on big data (big data). IEEE, 2018.
+        '''
         super(BigDataClassifier, self).__init__()
         self.interval = interval
         self.n = n

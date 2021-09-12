@@ -6,6 +6,12 @@ import numpy as np
 
 
 class TMCClassifier(Classifier):
+    '''
+    Sivanathan, Arunan, et al. "Classifying IoT devices in smart environments
+    using network traffic characteristics." IEEE Transactions on Mobile 
+    Computing 18.8 (2018): 1745-1759.
+    '''
+    
     def __init__(self, interval=1800):
         super(TMCClassifier, self).__init__()
         self.interval = interval
