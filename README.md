@@ -9,7 +9,7 @@ The implemented algorithms process and analyze traffic data in an offline manner
 - [2] Shahid, Mustafizur R., et al. "IoT devices recognition through network traffic analysis." 2018 IEEE international conference on big data (big data). IEEE, 2018.
 - [3] Bezawada, B., Bachani, M., Peterson, J., Shirazi, H., Ray, I., & Ray, I. (2018). "Iotsense: Behavioral fingerprinting of iot devices". arXiv preprint arXiv:1804.03852.
 - [4] Sivanathan, Arunan, et al. "Classifying IoT devices in smart environments using network traffic characteristics." IEEE Transactions on Mobile Computing 18.8 (2018): 1745-1759.
-- [5] Chenxin D., Hao G., Guanglei S., Jiahai Y. and Zhiliang W. "ByteIoT: a Practical IoT Device Identification System based on Packet Length Distribution" to appear in IEEE Transactions on Network and Service Management.
+- [5] Chenxin D., Hao G., Guanglei S., Jiahai Y. and Zhiliang W. "ByteIoT: a Practical IoT Device Identification System based on Packet Length Distribution", in IEEE Transactions on Network and Service Management, 2021. doi: 10.1109/TNSM.2021.3130312. 
 
 ## Other Related Works
 - [6] Meidan, Yair, et al. "ProfilIoT: A machine learning approach for IoT device identification based on network traffic analysis." Proceedings of the symposium on applied computing. 2017.
